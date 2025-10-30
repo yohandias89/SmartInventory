@@ -1,0 +1,12 @@
+﻿namespace SmartInventory.DataTransferObjects
+{
+    public class SupplierUpdateModel :BaseModel
+    {
+        public string SupplierCode { get; set; } = string.Empty;
+        public string SupplierName { get; set; } = string.Empty;
+        public string ContactPerson { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Contact { get; set; } = string.Empty;
+    }
+}
