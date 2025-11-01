@@ -28,5 +28,27 @@ namespace SmartInventory.Services
         {
             return ProductDetailRepository.DeleteProduct(barcodeNo);
         }
+
+
+        public static List<ProductSearchModel> GetProductsSearchDetails(
+            out int totalRecords,
+            out int totalPages,
+            int pageSize,
+            int currentPage,
+            string filterBarcode,
+            string filterProductName)
+        {
+            var products = ProductDetailRepository.GetProductSearchDetails(
+                out totalRecords,
+                pageSize,
+                currentPage,
+                filterBarcode,
+                filterProductName);
+
+            totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            return products;
+        }
     }
+
+
 }

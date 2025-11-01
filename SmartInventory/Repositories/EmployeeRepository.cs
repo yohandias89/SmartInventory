@@ -72,26 +72,42 @@ namespace SmartInventory.Repositories
         {
             using var conn = DatabaseConnection.GetConnection();
             conn.Open();
-            string query = @"insert into employee (EmployeeCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, Status ,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
-                             values (@EmployeeCode, @FirstName, @LastName, @DateOfBirth, @NIC, @Address, @Email, @Contact, @Status ,@CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy)";
+            using var transaction = conn.BeginTransaction();
+            try
+            {
+                string createQuery = @"insert into Employee 
+                (EmployeeCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, Status ,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy) 
+                values 
+                (@EmployeeCode, @FirstName, @LastName, @DateOfBirth, @NIC, @Address, @Email, @Contact, @Status ,@CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy)";
+                var cmd = new SqlCommand(createQuery, conn, transaction);
+                cmd.Parameters.Add("@EmployeeCode", SqlDbType.VarChar).Value = employee.EmployeeCode;
+                cmd.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = employee.FirstName;
+                cmd.Parameters.Add("@LastName", SqlDbType.VarChar).Value = employee.LastName;
+                cmd.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = employee.DateOfBirth;
+                cmd.Parameters.Add("@NIC", SqlDbType.VarChar).Value = employee.NIC;
+                cmd.Parameters.Add("@Address", SqlDbType.VarChar).Value = employee.Address;
+                cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = employee.Email;
+                cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = employee.Contact;
+                cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = employee.Status;
+                cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = employee.CreatedAt;
+                cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = employee.CreatedBy;
+                cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = employee.UpdatedAt;
+                cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = employee.UpdatedBy;
+                cmd.ExecuteNonQuery();
 
-            var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.Add("@EmployeeCode", SqlDbType.VarChar).Value = employee.EmployeeCode;
-            cmd.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = employee.FirstName;
-            cmd.Parameters.Add("@LastName", SqlDbType.VarChar).Value = employee.LastName;
-            cmd.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = employee.DateOfBirth;
-            cmd.Parameters.Add("@NIC", SqlDbType.VarChar).Value = employee.NIC;
-            cmd.Parameters.Add("@Address", SqlDbType.VarChar).Value = employee.Address;
-            cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = employee.Email;
-            cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = employee.Contact;
-            cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = employee.Status;
-            cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = employee.CreatedAt;
-            cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = employee.CreatedBy;
-            cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = employee.UpdatedAt;
-            cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = employee.UpdatedBy;
-            cmd.ExecuteNonQuery();
-
-            return true;
+                string updateSerialQuery = @"update SerialNumber 
+                                        set NextNo = NextNo + 1 
+                                        where SerialKey = 'EMP'";
+                var serialCmd = new SqlCommand(updateSerialQuery, conn, transaction);
+                serialCmd.ExecuteNonQuery();
+                transaction.Commit();
+                return true;
+            }
+            catch(Exception)
+            {
+                transaction.Rollback();
+                throw new Exception("Transaction failed!");
+            }
 
         }
 
@@ -106,7 +122,7 @@ namespace SmartInventory.Repositories
                 DateOfBirth = @DateOfBirth,
                 NIC = @NIC,
                 Address = @Address,
-                Email @Email,
+                Email = @Email,
                 Contact = @Contact,
                 Status  = @Status ,
                 UpdatedAt = @UpdatedAt,
@@ -143,6 +159,29 @@ namespace SmartInventory.Repositories
             cmd.ExecuteNonQuery();
 
             return true;
+
+        }
+
+        public static string GetEmployeeCode()
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+
+            string query = @"SELECT SerialKey, Padding, NextNo FROM SerialNumber WHERE SerialKey = 'EMP'";
+            using var cmd = new SqlCommand(query, conn);
+            using var reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                string serialKey = reader["SerialKey"].ToString()!;
+                int padding = Convert.ToInt32(reader["Padding"]);
+                int nextNo = Convert.ToInt32(reader["NextNo"]);
+
+                string paddedNumber = nextNo.ToString().PadLeft(padding, '0');
+                return $"{serialKey}{paddedNumber}";
+            }
+
+            throw new Exception("Serial configuration for 'EMP' not found.");
 
         }
     }

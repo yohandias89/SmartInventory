@@ -21,7 +21,36 @@ namespace SmartInventory
         {
             SubcategoryForm subcategoryForm = new SubcategoryForm();
             subcategoryForm.MdiParent = this;
-           subcategoryForm.Show();
+            subcategoryForm.Show();
+        }
+
+        private void CustomerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CustomerForm customerForm = new CustomerForm();
+            customerForm.MdiParent = this;
+            customerForm.Show();
+
+        }
+
+        private void EmployeeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EmployeeForm employeeForm = new EmployeeForm();
+            employeeForm.MdiParent = this;
+            employeeForm.Show();
+        }
+
+        private void SupplierToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SupplierForm supplierForm = new SupplierForm();
+            supplierForm.MdiParent = this;
+            supplierForm.Show();
+        }
+
+        private void purchaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PurchaseForm purchaseForm = new PurchaseForm();
+            purchaseForm.MdiParent = this;
+            purchaseForm.Show();
         }
     }
 }

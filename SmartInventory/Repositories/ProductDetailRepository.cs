@@ -6,11 +6,11 @@ using System.Data;
 
 namespace SmartInventory.Repositories
 {
-    public static  class ProductDetailRepository
+    public static class ProductDetailRepository
     {
         public static List<ProductDetail> GetProductDetails()
         {
-           List<ProductDetail> productDetails = [];
+            List<ProductDetail> productDetails = [];
             using var conn = DatabaseConnection.GetConnection();
             conn.Open();
             string query = @"select BarcodeNo, ProductCode, ProductBatch, SupplierCode, ManufactureDate, ExpiryDate, UnitCode, CostPrice,SellingPrice, AvailableQty, Status,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy 
@@ -28,18 +28,18 @@ namespace SmartInventory.Repositories
                     ManufactureDate = DateOnly.FromDateTime(reader.GetDateTime("ManufactureDate")),
                     ExpiryDate = DateOnly.FromDateTime(reader.GetDateTime("ExpiryDate")),
                     UnitCode = reader.GetString("UnitCode"),
-                    CostPrice =reader.GetDecimal("CostPrice"),
+                    CostPrice = reader.GetDecimal("CostPrice"),
                     SellingPrice = reader.GetDecimal("SellingPrice"),
                     AvailableQty = reader.GetDecimal("AvailableQty"),
                     Status = reader.GetByte("Status"),
                     CreatedAt = reader.GetDateTime("CreatedAt"),
-                    CreatedBy =reader.GetString("CreatedBy"),
+                    CreatedBy = reader.GetString("CreatedBy"),
                     UpdatedAt = reader.GetDateTime("UpdatedAt"),
                     UpdatedBy = reader.GetString("UpdatedBy")
                 });
             }
 
-           return productDetails;
+            return productDetails;
 
         }
 
@@ -94,7 +94,7 @@ namespace SmartInventory.Repositories
             cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = productDetail.CreatedAt;
             cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = productDetail.CreatedBy;
             cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = productDetail.UpdatedAt;
-            cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value= productDetail.UpdatedBy;
+            cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = productDetail.UpdatedBy;
 
             return true;
 
@@ -145,6 +145,90 @@ namespace SmartInventory.Repositories
             cmd.Parameters.Add("@BarcodeNo", SqlDbType.Int).Value = barcodeNo;
             return true;
         }
+
+        public static List<ProductSearchModel> GetProductSearchDetails(
+            out int totalRecords,
+            int pageSize,
+            int currentPage,
+            string filterBarcode,
+            string filterProductName)
+        {
+            List<ProductSearchModel> products = new();
+            totalRecords = 0;
+
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+
+            var whereClauses = new List<string>();
+            var parameters = new List<SqlParameter>();
+
+            if (!string.IsNullOrWhiteSpace(filterBarcode))
+            {
+                whereClauses.Add("b.BarcodeNo LIKE @BarcodeNo");
+                parameters.Add(new SqlParameter("@BarcodeNo", $"%{filterBarcode}%"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterProductName))
+            {
+                whereClauses.Add("a.ProductName LIKE @ProductName");
+                parameters.Add(new SqlParameter("@ProductName", $"%{filterProductName}%"));
+            }
+
+            string whereSql = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
+
+            // Count query
+            string countQuery = $@"
+                                    SELECT COUNT(*) 
+                                    FROM Product AS a
+                                    JOIN ProductDetail AS b ON a.ProductCode = b.ProductCode
+                                    {whereSql}";
+
+            using (var countCmd = new SqlCommand(countQuery, conn))
+            {
+                foreach (var param in parameters)
+                    countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value)); // clone
+
+                totalRecords = (int)countCmd.ExecuteScalar();
+            }
+
+            int offset = (currentPage - 1) * pageSize;
+
+            // Data query
+            string pagedQuery = $@"
+                                    SELECT b.BarcodeNo, b.ProductBatch, a.ProductName, b.ExpiryDate, b.UnitCode, 
+                                           b.CostPrice, b.SellingPrice, b.AvailableQty
+                                    FROM Product AS a
+                                    JOIN ProductDetail AS b ON a.ProductCode = b.ProductCode
+                                    {whereSql}
+                                    ORDER BY b.BarcodeNo
+                                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            using var cmd = new SqlCommand(pagedQuery, conn);
+            foreach (var param in parameters)
+                cmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value)); // clone again
+
+            cmd.Parameters.AddWithValue("@Offset", offset);
+            cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                products.Add(new ProductSearchModel
+                {
+                    BarcodeNo = reader.GetInt32(reader.GetOrdinal("BarcodeNo")),
+                    ProductBatch = reader.GetString(reader.GetOrdinal("ProductBatch")),
+                    ProductName = reader.GetString(reader.GetOrdinal("ProductName")),
+                    ExpiryDate = DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("ExpiryDate"))),
+                    UnitCode = reader.GetString(reader.GetOrdinal("UnitCode")),
+                    CostPrice = reader.GetDecimal(reader.GetOrdinal("CostPrice")),
+                    SellingPrice = reader.GetDecimal(reader.GetOrdinal("SellingPrice")),
+                    AvailableQty = reader.GetDecimal(reader.GetOrdinal("AvailableQty"))
+                });
+            }
+
+            return products;
+        }
+
 
     }
 }

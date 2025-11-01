@@ -71,27 +71,44 @@ namespace SmartInventory.Repositories
         {
             using var conn = DatabaseConnection.GetConnection();
             conn.Open();
-            string query = @"insert into Customer (CustomerCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, Status ,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy) 
+
+            using var transaction = conn.BeginTransaction();
+            try
+            {
+                string createQuery = @"insert into Customer (CustomerCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, Status ,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy) 
                              values (@CustomerCode, @FirstName, @LastName, @DateOfBirth, @NIC, @Address, @Email, @Contact, @Status ,@CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy)";
 
-            var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.Add("@CustomerCode", SqlDbType.VarChar).Value = customer.CustomerCode;
-            cmd.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = customer.FirstName;
-            cmd.Parameters.Add("@LastName", SqlDbType.VarChar).Value = customer.LastName;
-            cmd.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = customer.DateOfBirth;
-            cmd.Parameters.Add("@NIC",SqlDbType.VarChar).Value = customer.NIC;
-            cmd.Parameters.Add("@Address",SqlDbType.VarChar).Value = customer.Address;
-            cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = customer.Email;
-            cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = customer.Contact;
-            cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = customer.Status;
-            cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = customer.CreatedAt;
-            cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = customer.CreatedBy;
-            cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = customer.UpdatedAt;
-            cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = customer.UpdatedBy;
-            cmd.ExecuteNonQuery();
+                var cmd = new SqlCommand(createQuery, conn, transaction);
+                cmd.Parameters.Add("@CustomerCode", SqlDbType.VarChar).Value = customer.CustomerCode;
+                cmd.Parameters.Add("@FirstName", SqlDbType.VarChar).Value = customer.FirstName;
+                cmd.Parameters.Add("@LastName", SqlDbType.VarChar).Value = customer.LastName;
+                cmd.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = customer.DateOfBirth;
+                cmd.Parameters.Add("@NIC", SqlDbType.VarChar).Value = customer.NIC;
+                cmd.Parameters.Add("@Address", SqlDbType.VarChar).Value = customer.Address;
+                cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = customer.Email;
+                cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = customer.Contact;
+                cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = customer.Status;
+                cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = customer.CreatedAt;
+                cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = customer.CreatedBy;
+                cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = customer.UpdatedAt;
+                cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = customer.UpdatedBy;
+                cmd.ExecuteNonQuery();
 
-            return true;
+                string updateSerialQuery = @"update SerialNumber 
+                                              set NextNo = NextNo + 1 
+                                              where SerialKey = 'CUS'";
+                var serialCmd = new SqlCommand(updateSerialQuery, conn, transaction);
+                serialCmd.ExecuteNonQuery();
+                transaction.Commit();
 
+                return true;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+
+            }
         }
 
         public static bool UpdateCustomer(CustomerUpdateModel customer)
@@ -105,7 +122,7 @@ namespace SmartInventory.Repositories
                             DateOfBirth = @DateOfBirth, 
                             NIC = @NIC, 
                             Address = @Address, 
-                            Email @Email, 
+                            Email = @Email, 
                             Contact = @Contact,
                             Status  = @Status , 
                             UpdatedAt = @UpdatedAt, 
@@ -142,6 +159,29 @@ namespace SmartInventory.Repositories
             cmd.ExecuteNonQuery();
 
             return true;
+
+        }
+
+        public static string GetNewCustomerCode()
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+
+            string query = @"SELECT SerialKey, Padding, NextNo FROM SerialNumber WHERE SerialKey = 'CUS'";
+            using var cmd = new SqlCommand(query, conn);
+            using var reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                string serialKey = reader["SerialKey"].ToString()!;
+                int padding = Convert.ToInt32(reader["Padding"]);
+                int nextNo = Convert.ToInt32(reader["NextNo"]);
+
+                string paddedNumber = nextNo.ToString().PadLeft(padding, '0');
+                return $"{serialKey}{paddedNumber}";
+            }
+
+            throw new Exception("Serial configuration for 'CUS' not found.");
 
         }
     }

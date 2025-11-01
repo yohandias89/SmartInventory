@@ -30,5 +30,10 @@ namespace SmartInventory.Services
         {   
             return EmployeeRepository.DeleteEmployee(employeeCode);
         }
+
+        public static string GetEmployeeCode()
+        {
+            return EmployeeRepository.GetEmployeeCode();
+        }
     }
 }

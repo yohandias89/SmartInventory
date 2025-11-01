@@ -36,10 +36,10 @@
             btnDelete = new Button();
             btnUpdate = new Button();
             btnClear = new Button();
-            dgvSubCatgories = new DataGridView();
+            dgvSubCategories = new DataGridView();
             label2 = new Label();
             txtSubCategoryName = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)dgvSubCatgories).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSubCategories).BeginInit();
             SuspendLayout();
             // 
             // lblCategoryCode
@@ -115,14 +115,14 @@
             btnClear.UseVisualStyleBackColor = true;
             btnClear.Click += BtnClear_Click;
             // 
-            // dgvSubCatgories
+            // dgvSubCategories
             // 
-            dgvSubCatgories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvSubCatgories.Location = new Point(22, 203);
-            dgvSubCatgories.Name = "dgvSubCatgories";
-            dgvSubCatgories.RowHeadersWidth = 51;
-            dgvSubCatgories.Size = new Size(1357, 290);
-            dgvSubCatgories.TabIndex = 8;
+            dgvSubCategories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvSubCategories.Location = new Point(22, 203);
+            dgvSubCategories.Name = "dgvSubCategories";
+            dgvSubCategories.RowHeadersWidth = 51;
+            dgvSubCategories.Size = new Size(1357, 290);
+            dgvSubCategories.TabIndex = 8;
             // 
             // label2
             // 
@@ -147,7 +147,7 @@
             ClientSize = new Size(1411, 574);
             Controls.Add(txtSubCategoryName);
             Controls.Add(label2);
-            Controls.Add(dgvSubCatgories);
+            Controls.Add(dgvSubCategories);
             Controls.Add(btnClear);
             Controls.Add(btnUpdate);
             Controls.Add(btnDelete);
@@ -158,7 +158,7 @@
             Controls.Add(lblCategoryCode);
             Name = "SubcategoryForm";
             Text = "SubcategoryForm";
-            ((System.ComponentModel.ISupportInitialize)dgvSubCatgories).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvSubCategories).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -173,7 +173,7 @@
         private Button btnDelete;
         private Button btnUpdate;
         private Button btnClear;
-        private DataGridView dgvSubCatgories;
+        private DataGridView dgvSubCategories;
         private Label label2;
         private TextBox txtSubCategoryName;
     }

@@ -29,6 +29,10 @@ namespace SmartInventory.Services
         {
             return SupplierRepository.DeleteSupplier(supplierCode);
         }
+        public static string GetSupplierCode()
+        {
+            return SupplierRepository.GetSupplierCode();
+        }
 
     }
 }

@@ -27,5 +27,10 @@ namespace SmartInventory.Services
         {
             return CustomerRepository.DeleteCustomer(customerCode);
         }
+
+        public static string GenerateCustomerCode()
+        {
+            return CustomerRepository.GetNewCustomerCode();
+        }
     }
 }

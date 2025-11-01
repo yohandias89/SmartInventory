@@ -1,3 +1,5 @@
+using SmartInventory.Forms;
+
 namespace SmartInventory
 {
     internal static class Program

@@ -8,9 +8,11 @@
         public string CustomerEmail { get; set; } = string.Empty;
         public string CustomerContact { get; set; }=string.Empty;
         public PaymentMethod PaymentMethod { get; set; }
-        public decimal TotalSales { get; set; }
+        public decimal TotalSales => SalesDetails.Sum(detail => detail.SalesPrice);
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
+
+        public List<SalesDetail> SalesDetails { get; set; } = [];
     }
 }
