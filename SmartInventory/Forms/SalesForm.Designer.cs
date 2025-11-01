@@ -44,8 +44,8 @@
             txtContact = new TextBox();
             lblPaymentMethod = new Label();
             cmbPaymentMethod = new ComboBox();
-            lblProductCode = new Label();
-            txtProductCode = new TextBox();
+            lblBarcodeNo = new Label();
+            txtBarcodeNo = new TextBox();
             btnSearchProduct = new Button();
             lblBatchCode = new Label();
             txtBatchCode = new TextBox();
@@ -53,17 +53,17 @@
             txtUnitCode = new TextBox();
             lblSellingPrice = new Label();
             txtSellingPrice = new TextBox();
-            lblPurchaseQty = new Label();
-            txtPurchaseQty = new TextBox();
+            lblSalesQty = new Label();
+            txtSalesQty = new TextBox();
             lblProductName = new Label();
             txtProductName = new TextBox();
             btnAddProduct = new Button();
-            dataGridView1 = new DataGridView();
+            dgvsalesDetailes = new DataGridView();
             lblTotalSales = new Label();
             txtTotalPurchase = new TextBox();
             btnSave = new Button();
             btnClear = new Button();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvsalesDetailes).BeginInit();
             SuspendLayout();
             // 
             // lblSalesCode
@@ -205,21 +205,21 @@
             cmbPaymentMethod.Size = new Size(168, 28);
             cmbPaymentMethod.TabIndex = 15;
             // 
-            // lblProductCode
+            // lblBarcodeNo
             // 
-            lblProductCode.AutoSize = true;
-            lblProductCode.Location = new Point(135, 247);
-            lblProductCode.Name = "lblProductCode";
-            lblProductCode.Size = new Size(106, 20);
-            lblProductCode.TabIndex = 16;
-            lblProductCode.Text = "Product Code :";
+            lblBarcodeNo.AutoSize = true;
+            lblBarcodeNo.Location = new Point(135, 247);
+            lblBarcodeNo.Name = "lblBarcodeNo";
+            lblBarcodeNo.Size = new Size(95, 20);
+            lblBarcodeNo.TabIndex = 16;
+            lblBarcodeNo.Text = "Barcode No :";
             // 
-            // txtProductCode
+            // txtBarcodeNo
             // 
-            txtProductCode.Location = new Point(135, 270);
-            txtProductCode.Name = "txtProductCode";
-            txtProductCode.Size = new Size(183, 27);
-            txtProductCode.TabIndex = 17;
+            txtBarcodeNo.Location = new Point(135, 270);
+            txtBarcodeNo.Name = "txtBarcodeNo";
+            txtBarcodeNo.Size = new Size(183, 27);
+            txtBarcodeNo.TabIndex = 17;
             // 
             // btnSearchProduct
             // 
@@ -282,21 +282,21 @@
             txtSellingPrice.Size = new Size(125, 27);
             txtSellingPrice.TabIndex = 24;
             // 
-            // lblPurchaseQty
+            // lblSalesQty
             // 
-            lblPurchaseQty.AutoSize = true;
-            lblPurchaseQty.Location = new Point(794, 249);
-            lblPurchaseQty.Name = "lblPurchaseQty";
-            lblPurchaseQty.Size = new Size(94, 20);
-            lblPurchaseQty.TabIndex = 25;
-            lblPurchaseQty.Text = "Purchase Qty";
+            lblSalesQty.AutoSize = true;
+            lblSalesQty.Location = new Point(794, 249);
+            lblSalesQty.Name = "lblSalesQty";
+            lblSalesQty.Size = new Size(70, 20);
+            lblSalesQty.TabIndex = 25;
+            lblSalesQty.Text = "Sales Qty";
             // 
-            // txtPurchaseQty
+            // txtSalesQty
             // 
-            txtPurchaseQty.Location = new Point(794, 272);
-            txtPurchaseQty.Name = "txtPurchaseQty";
-            txtPurchaseQty.Size = new Size(125, 27);
-            txtPurchaseQty.TabIndex = 26;
+            txtSalesQty.Location = new Point(794, 272);
+            txtSalesQty.Name = "txtSalesQty";
+            txtSalesQty.Size = new Size(125, 27);
+            txtSalesQty.TabIndex = 26;
             // 
             // lblProductName
             // 
@@ -325,14 +325,14 @@
             btnAddProduct.UseVisualStyleBackColor = true;
             btnAddProduct.Click += btnAddProduct_Click;
             // 
-            // dataGridView1
+            // dgvsalesDetailes
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(45, 356);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(1063, 223);
-            dataGridView1.TabIndex = 30;
+            dgvsalesDetailes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvsalesDetailes.Location = new Point(45, 356);
+            dgvsalesDetailes.Name = "dgvsalesDetailes";
+            dgvsalesDetailes.RowHeadersWidth = 51;
+            dgvsalesDetailes.Size = new Size(1063, 223);
+            dgvsalesDetailes.TabIndex = 30;
             // 
             // lblTotalSales
             // 
@@ -380,12 +380,12 @@
             Controls.Add(btnSave);
             Controls.Add(txtTotalPurchase);
             Controls.Add(lblTotalSales);
-            Controls.Add(dataGridView1);
+            Controls.Add(dgvsalesDetailes);
             Controls.Add(btnAddProduct);
             Controls.Add(txtProductName);
             Controls.Add(lblProductName);
-            Controls.Add(txtPurchaseQty);
-            Controls.Add(lblPurchaseQty);
+            Controls.Add(txtSalesQty);
+            Controls.Add(lblSalesQty);
             Controls.Add(txtSellingPrice);
             Controls.Add(lblSellingPrice);
             Controls.Add(txtUnitCode);
@@ -393,8 +393,8 @@
             Controls.Add(txtBatchCode);
             Controls.Add(lblBatchCode);
             Controls.Add(btnSearchProduct);
-            Controls.Add(txtProductCode);
-            Controls.Add(lblProductCode);
+            Controls.Add(txtBarcodeNo);
+            Controls.Add(lblBarcodeNo);
             Controls.Add(cmbPaymentMethod);
             Controls.Add(lblPaymentMethod);
             Controls.Add(txtContact);
@@ -413,7 +413,7 @@
             Controls.Add(lblSalesCode);
             Name = "SalesForm";
             Text = "SalesForm";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvsalesDetailes).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -436,8 +436,8 @@
         private TextBox txtContact;
         private Label lblPaymentMethod;
         private ComboBox cmbPaymentMethod;
-        private Label lblProductCode;
-        private TextBox txtProductCode;
+        private Label lblBarcodeNo;
+        private TextBox txtBarcodeNo;
         private Button btnSearchProduct;
         private Label lblBatchCode;
         private TextBox txtBatchCode;
@@ -445,12 +445,12 @@
         private TextBox txtUnitCode;
         private Label lblSellingPrice;
         private TextBox txtSellingPrice;
-        private Label lblPurchaseQty;
-        private TextBox txtPurchaseQty;
+        private Label lblSalesQty;
+        private TextBox txtSalesQty;
         private Label lblProductName;
         private TextBox txtProductName;
         private Button btnAddProduct;
-        private DataGridView dataGridView1;
+        private DataGridView dgvsalesDetailes;
         private Label lblTotalSales;
         private TextBox txtTotalPurchase;
         private Button btnSave;
