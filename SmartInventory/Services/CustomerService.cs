@@ -35,6 +35,7 @@ namespace SmartInventory.Services
 
         public static List<CustomerSearchModel> GetCustomerSearchDetails(
            out int totalRecords,
+           out int totalPages,
            int pageSize,
            int currentPage,
            string filterFirstName,
@@ -44,7 +45,7 @@ namespace SmartInventory.Services
            string filterContact
         )
         {
-            return CustomerRepository.GetSerchedCustomers(
+            var customers = CustomerRepository.GetSerchedCustomers(
                 out totalRecords,
                 pageSize,
                 currentPage,
@@ -52,8 +53,9 @@ namespace SmartInventory.Services
                 filterLastName,
                 filterNIC,
                 filterEmail,
-                filterContact
-            );
+                filterContact);
+            totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            return customers;
         }
 
     }

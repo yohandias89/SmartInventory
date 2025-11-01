@@ -205,12 +205,12 @@ namespace SmartInventory.Repositories
             var parameters = new List<SqlParameter>();
             if (!string.IsNullOrEmpty(filterFirstName))
             {
-                whereClauses.Add("CustomerName LIKE @CustomerName");
+                whereClauses.Add("FirstName LIKE @FirstName");
                 parameters.Add(new SqlParameter("@FirstName", $"%{filterFirstName}%"));
             }
             if (!string.IsNullOrEmpty(filterLastName))
             {
-                whereClauses.Add("CustomerName LIKE @CustomerName");
+                whereClauses.Add("LastName LIKE @LastName");
                 parameters.Add(new SqlParameter("@LastName", $"%{filterLastName}%"));
             }
             if (!string.IsNullOrEmpty(filterNIC))
@@ -229,11 +229,9 @@ namespace SmartInventory.Repositories
                 parameters.Add(new SqlParameter("@Contact", $"%{filterContact}%"));
             }
             string whereClause = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
-            string countQuery = $@"SELECT COUNT(*) OVER AS TotalRecords,
-                                         CustomerCode, FirstName, lastName,NIC,Address, Email, Contact
-                                FROM Customer {whereClause}
-                                ORDER BY FirstName
-                                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            string countQuery = $@"SELECT COUNT(*)
+                                FROM Customer 
+                                {whereClause}";
             using var countCmd = new SqlCommand(countQuery, conn);
             foreach( var param in parameters)
             {
@@ -246,7 +244,7 @@ namespace SmartInventory.Repositories
                 SELECT CustomerCode, FirstName, LastName,NIC,Address, Email, Contact
                 FROM Customer
                 {whereClause}
-                ORDER BY CustomerName
+                ORDER BY FirstName, LastName
                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
             using var cmd = new SqlCommand(pagedQuery, conn);
