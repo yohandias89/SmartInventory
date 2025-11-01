@@ -185,7 +185,7 @@ namespace SmartInventory.Repositories
 
         }
 
-        public static List<CustomerSearchModel> GetSerchedCustomers(
+        public static List<CustomerSearchModel> GetSearchedCustomers(
             out int totalRecords,
             int pageSize,
             int currentPage,
@@ -197,12 +197,13 @@ namespace SmartInventory.Repositories
         )
         {
             List<CustomerSearchModel> customers = [];
+            var whereClauses = new List<string>();
+            var parameters = new List<SqlParameter>();
             totalRecords = 0;
 
             using var conn = DatabaseConnection.GetConnection();
             conn.Open();
-            var whereClauses = new List<string>();
-            var parameters = new List<SqlParameter>();
+            
             if (!string.IsNullOrEmpty(filterFirstName))
             {
                 whereClauses.Add("FirstName LIKE @FirstName");
@@ -236,8 +237,9 @@ namespace SmartInventory.Repositories
             foreach( var param in parameters)
             {
                 countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
-                totalRecords = (int)countCmd.ExecuteScalar();
             }
+
+            totalRecords = (int)countCmd.ExecuteScalar();
 
             int offset = (currentPage - 1) * pageSize;
             string pagedQuery = $@"
@@ -250,7 +252,7 @@ namespace SmartInventory.Repositories
             using var cmd = new SqlCommand(pagedQuery, conn);
             foreach (var param in parameters)
             {
-                cmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value)); // clone
+                cmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
             }
             cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
             cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;

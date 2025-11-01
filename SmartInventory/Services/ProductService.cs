@@ -31,5 +31,29 @@ namespace SmartInventory.Services
         {
             return ProductRepository.DeleteProduct(productCode);
         }
+
+        public  static List<Product> SearchProducts(
+            out int totalRecords,
+            out int totalPages,
+            int pageSize,
+            int currentPage,
+            string filterCategoryCode,
+            string filterSubCategoryCode,
+            string filterProductCode,
+            string filterProductName
+            )
+        {
+            var products = ProductRepository.GetSearchedProducts(
+                out totalRecords,
+                pageSize,
+                currentPage,
+                filterCategoryCode,
+                filterSubCategoryCode,
+                filterProductCode,
+                filterProductName
+                );
+            totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            return products;
+        }
     }
 }

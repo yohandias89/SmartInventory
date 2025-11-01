@@ -52,5 +52,19 @@ namespace SmartInventory
             purchaseForm.MdiParent = this;
             purchaseForm.Show();
         }
+
+        private void salesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SalesForm salesForm = new SalesForm();
+            salesForm.MdiParent = this;
+            salesForm.Show();
+        }
+
+        private void productListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProductListForm productListForm = new ProductListForm();
+            productListForm.MdiParent = this;
+            productListForm.Show();
+        }
     }
 }

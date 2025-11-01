@@ -45,7 +45,7 @@ namespace SmartInventory.Services
            string filterContact
         )
         {
-            var customers = CustomerRepository.GetSerchedCustomers(
+            var customers = CustomerRepository.GetSearchedCustomers(
                 out totalRecords,
                 pageSize,
                 currentPage,

@@ -9,7 +9,7 @@
         public string CustomerEmail { get; set; } = string.Empty;
         public string CustomerContact { get; set; }=string.Empty;
         public PaymentMethod PaymentMethod { get; set; }
-        public decimal TotalSales => SalesDetails.Sum(detail => detail.SalesPrice);
+        public decimal TotalSales => SalesDetails.Sum(detail => detail.SalesAmount);
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string CreatedBy { get; set; } = string.Empty;
 

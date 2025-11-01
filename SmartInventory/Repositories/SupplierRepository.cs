@@ -214,8 +214,8 @@ namespace SmartInventory.Repositories
             foreach (var param in parameters)
             {
                 countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
-                totalRecords = (int)countCmd.ExecuteScalar();
             }
+            totalRecords = (int)countCmd.ExecuteScalar();
 
             int offset = (currentPage - 1) * pageSize;
             string pagedQuery = $@"

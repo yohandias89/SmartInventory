@@ -59,14 +59,13 @@ namespace SmartInventory.Repositories
                     stockCmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = salesHeader.CreatedBy;
 
                     stockCmd.ExecuteNonQuery();
+                }
 
-                    string updateSerialQuery = @"update SerialNumber 
+                string updateSerialQuery = @"update SerialNumber 
                                                 set NextNo = NextNo + 1 
                                                 where SerialKey = 'INV'";
-                    using var serialCmd = new SqlCommand(updateSerialQuery, conn, transaction);
-                    serialCmd.ExecuteNonQuery();
-
-                }
+                using var serialCmd = new SqlCommand(updateSerialQuery, conn, transaction);
+                serialCmd.ExecuteNonQuery();
                 transaction.Commit();
                 return true;
             }

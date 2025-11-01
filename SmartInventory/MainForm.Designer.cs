@@ -94,14 +94,14 @@
             // categoryToolStripMenuItem
             // 
             categoryToolStripMenuItem.Name = "categoryToolStripMenuItem";
-            categoryToolStripMenuItem.Size = new Size(223, 26);
+            categoryToolStripMenuItem.Size = new Size(224, 26);
             categoryToolStripMenuItem.Text = "Category";
             categoryToolStripMenuItem.Click += CategoryToolStripMenuItem_Click;
             // 
             // subCategoryToolStripMenuItem
             // 
             subCategoryToolStripMenuItem.Name = "subCategoryToolStripMenuItem";
-            subCategoryToolStripMenuItem.Size = new Size(223, 26);
+            subCategoryToolStripMenuItem.Size = new Size(224, 26);
             subCategoryToolStripMenuItem.Text = "Sub Category";
             subCategoryToolStripMenuItem.Click += SubCategoryToolStripMenuItem_Click;
             // 
@@ -109,52 +109,53 @@
             // 
             productToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { productListToolStripMenuItem, productBatchToolStripMenuItem });
             productToolStripMenuItem.Name = "productToolStripMenuItem";
-            productToolStripMenuItem.Size = new Size(223, 26);
+            productToolStripMenuItem.Size = new Size(224, 26);
             productToolStripMenuItem.Text = "Product";
             // 
             // productListToolStripMenuItem
             // 
             productListToolStripMenuItem.Name = "productListToolStripMenuItem";
-            productListToolStripMenuItem.Size = new Size(184, 26);
+            productListToolStripMenuItem.Size = new Size(224, 26);
             productListToolStripMenuItem.Text = "Product List";
+            productListToolStripMenuItem.Click += productListToolStripMenuItem_Click;
             // 
             // productBatchToolStripMenuItem
             // 
             productBatchToolStripMenuItem.Name = "productBatchToolStripMenuItem";
-            productBatchToolStripMenuItem.Size = new Size(184, 26);
+            productBatchToolStripMenuItem.Size = new Size(224, 26);
             productBatchToolStripMenuItem.Text = "Product Batch";
             // 
             // employeeToolStripMenuItem
             // 
             employeeToolStripMenuItem.Name = "employeeToolStripMenuItem";
-            employeeToolStripMenuItem.Size = new Size(223, 26);
+            employeeToolStripMenuItem.Size = new Size(224, 26);
             employeeToolStripMenuItem.Text = "Employee";
             employeeToolStripMenuItem.Click += EmployeeToolStripMenuItem_Click;
             // 
             // supplierToolStripMenuItem
             // 
             supplierToolStripMenuItem.Name = "supplierToolStripMenuItem";
-            supplierToolStripMenuItem.Size = new Size(223, 26);
+            supplierToolStripMenuItem.Size = new Size(224, 26);
             supplierToolStripMenuItem.Text = "Supplier";
             supplierToolStripMenuItem.Click += SupplierToolStripMenuItem_Click;
             // 
             // customerToolStripMenuItem
             // 
             customerToolStripMenuItem.Name = "customerToolStripMenuItem";
-            customerToolStripMenuItem.Size = new Size(223, 26);
+            customerToolStripMenuItem.Size = new Size(224, 26);
             customerToolStripMenuItem.Text = "Customer";
             customerToolStripMenuItem.Click += CustomerToolStripMenuItem_Click;
             // 
             // unitOfMeasurementToolStripMenuItem
             // 
             unitOfMeasurementToolStripMenuItem.Name = "unitOfMeasurementToolStripMenuItem";
-            unitOfMeasurementToolStripMenuItem.Size = new Size(223, 26);
+            unitOfMeasurementToolStripMenuItem.Size = new Size(224, 26);
             unitOfMeasurementToolStripMenuItem.Text = "Unit of Mesurement";
             // 
             // serialNumbersToolStripMenuItem
             // 
             serialNumbersToolStripMenuItem.Name = "serialNumbersToolStripMenuItem";
-            serialNumbersToolStripMenuItem.Size = new Size(223, 26);
+            serialNumbersToolStripMenuItem.Size = new Size(224, 26);
             serialNumbersToolStripMenuItem.Text = "Serial Numbers";
             // 
             // viewToolStripMenuItem
@@ -176,6 +177,7 @@
             salesToolStripMenuItem.Name = "salesToolStripMenuItem";
             salesToolStripMenuItem.Size = new Size(224, 26);
             salesToolStripMenuItem.Text = "Sales";
+            salesToolStripMenuItem.Click += salesToolStripMenuItem_Click;
             // 
             // transactionToolStripMenuItem
             // 

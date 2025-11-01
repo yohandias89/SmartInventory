@@ -6,7 +6,7 @@ namespace SmartInventory.Forms
     public partial class CustomerSearchDialog : Form
     {
         private List<CustomerSearchModel> searchModels = new();
-        public CustomerSearchModel SelectedCustomer { get; private set; }
+        public CustomerSearchModel? SelectedCustomer { get; private set; }
         private BindingSource bindingSource = new();
 
         private int pageSize = 10;
@@ -68,7 +68,6 @@ namespace SmartInventory.Forms
                 filterContact);
             bindingSource.DataSource = searchModels;
             dgvSearchedCustomers.DataSource = bindingSource;
-            currentPage = pageNumber;
             txtPageInfo.Text = $"Page {currentPage} of {totalPages}";
         }
 
