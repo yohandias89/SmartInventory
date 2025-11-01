@@ -9,9 +9,9 @@ namespace SmartInventory.Forms
     {
         private List<ProductSearchModel> searchModels = [];
         private BindingSource bindingSource = new();
+        private int totalRecords = 0;
         private int pageSize = 10;
         private int currentPage = 1;
-        private int totalRecords = 0;
         private int totalPages = 0;
         private string filterBarcode = "";
         private string filterProductName = "";
@@ -55,7 +55,7 @@ namespace SmartInventory.Forms
             bindingSource.DataSource = searchModels;
             dgvSerchedProducts.DataSource = bindingSource;
 
-            lblPageInfo.Text = $"Page {currentPage} of {totalPages}";
+            txtPageInfo.Text = $"Page {currentPage} of {totalPages}";
         }
 
         private void BtnSearch_Click(object sender, EventArgs e)

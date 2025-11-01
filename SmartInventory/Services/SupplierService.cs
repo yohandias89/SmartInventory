@@ -1,6 +1,7 @@
 ﻿using SmartInventory.DataTransferObjects;
 using SmartInventory.Models;
 using SmartInventory.Repositories;
+using System.Drawing.Printing;
 
 namespace SmartInventory.Services
 {
@@ -32,6 +33,26 @@ namespace SmartInventory.Services
         public static string GetSupplierCode()
         {
             return SupplierRepository.GetSupplierCode();
+        }
+
+        public static List<SupplierSearchModel> GetSupplierSearchDetails(
+           out int totalRecords,
+           out int  totalPages,
+           int pageSize,
+           int currentPage,
+           string filterSupplierName,
+           string filterEmail,
+           string filterContact
+       )
+        {  var suppliers = SupplierRepository.GetSupplierSearchDetails(
+               out totalRecords,
+               pageSize,
+               currentPage,
+               filterSupplierName,
+               filterEmail,
+               filterContact);
+            totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            return suppliers;
         }
 
     }

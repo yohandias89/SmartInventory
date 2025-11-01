@@ -169,5 +169,84 @@ namespace SmartInventory.Repositories
             throw new Exception("Serial configuration for 'SUP' not found.");
 
         }
+
+
+        public static List<SupplierSearchModel> GetSupplierSearchDetails(
+            out int totalRecords,
+            int pageSize,
+            int currentPage,
+            string filterSupplierName,
+            string filterEmail,
+            string filterContact
+        )
+        {
+            List<SupplierSearchModel> suppliers = [];
+            totalRecords = 0;
+
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            var whereClauses = new List<string>();
+            var parameters = new List<SqlParameter>();
+            if (!string.IsNullOrEmpty(filterSupplierName))
+            {
+                whereClauses.Add("SupplierName LIKE @SupplierName");
+                parameters.Add(new SqlParameter("@SupplierName", $"%{filterSupplierName}%"));
+            }
+            if (!string.IsNullOrEmpty(filterEmail))
+            {
+                whereClauses.Add("Email LIKE @Email");
+                parameters.Add(new SqlParameter("@Email", $"%{filterEmail}%"));
+            }
+            if (!string.IsNullOrEmpty(filterContact))
+            {
+                whereClauses.Add("Contact LIKE @Contact");
+                parameters.Add(new SqlParameter("@Contact", $"%{filterContact}%"));
+            }
+
+            string whereClause = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
+
+            string countQuery = $@"
+                SELECT COUNT(*)
+                FROM Supplier
+                {whereClause}";
+
+            using var countCmd = new SqlCommand(countQuery, conn);
+            foreach (var param in parameters)
+            {
+                countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
+                totalRecords = (int)countCmd.ExecuteScalar();
+            }
+
+            int offset = (currentPage - 1) * pageSize;
+            string pagedQuery = $@"
+                SELECT SupplierCode, SupplierName, ContactPerson, Address, Email, Contact
+                FROM Supplier
+                {whereClause}
+                ORDER BY SupplierName
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            using var pagedCmd = new SqlCommand(pagedQuery, conn);
+            foreach (var param in parameters)
+            {
+                pagedCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
+            }
+            pagedCmd.Parameters.Add(new SqlParameter("@Offset", offset));
+            pagedCmd.Parameters.Add(new SqlParameter("@PageSize", pageSize));
+
+            using var reader = pagedCmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                suppliers.Add(new SupplierSearchModel
+                {
+                    SupplierCode = reader.GetString("SupplierCode"),
+                    SupplierName = reader.GetString("SupplierName"),
+                    ContactPerson = reader.GetString("ContactPerson"),
+                    Address = reader.GetString("Address"),
+                    Email = reader.GetString("Email"),
+                    Contact = reader.GetString("Contact")
+                });
+            }
+            return suppliers;
+        }
     }
 }

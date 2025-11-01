@@ -184,5 +184,94 @@ namespace SmartInventory.Repositories
             throw new Exception("Serial configuration for 'CUS' not found.");
 
         }
+
+        public static List<CustomerSearchModel> GetSerchedCustomers(
+            out int totalRecords,
+            int pageSize,
+            int currentPage,
+            string filterFirstName,
+            string filterLastName,
+            string filterNIC,
+            string filterEmail,
+            string filterContact
+        )
+        {
+            List<CustomerSearchModel> customers = [];
+            totalRecords = 0;
+
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            var whereClauses = new List<string>();
+            var parameters = new List<SqlParameter>();
+            if (!string.IsNullOrEmpty(filterFirstName))
+            {
+                whereClauses.Add("CustomerName LIKE @CustomerName");
+                parameters.Add(new SqlParameter("@FirstName", $"%{filterFirstName}%"));
+            }
+            if (!string.IsNullOrEmpty(filterLastName))
+            {
+                whereClauses.Add("CustomerName LIKE @CustomerName");
+                parameters.Add(new SqlParameter("@LastName", $"%{filterLastName}%"));
+            }
+            if (!string.IsNullOrEmpty(filterNIC))
+            {
+                whereClauses.Add("NIC LIKE @NIC");
+                parameters.Add(new SqlParameter("@NIC", $"%{filterNIC}%"));
+            }
+            if (!string.IsNullOrEmpty(filterEmail))
+            {
+                whereClauses.Add("Email LIKE @Email");
+                parameters.Add(new SqlParameter("@Email", $"%{filterEmail}%"));
+            }
+            if (!string.IsNullOrEmpty(filterContact))
+            {
+                whereClauses.Add("Contact LIKE @Contact");
+                parameters.Add(new SqlParameter("@Contact", $"%{filterContact}%"));
+            }
+            string whereClause = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
+            string countQuery = $@"SELECT COUNT(*) OVER AS TotalRecords,
+                                         CustomerCode, FirstName, lastName,NIC,Address, Email, Contact
+                                FROM Customer {whereClause}
+                                ORDER BY FirstName
+                                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            using var countCmd = new SqlCommand(countQuery, conn);
+            foreach( var param in parameters)
+            {
+                countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
+                totalRecords = (int)countCmd.ExecuteScalar();
+            }
+
+            int offset = (currentPage - 1) * pageSize;
+            string pagedQuery = $@"
+                SELECT CustomerCode, FirstName, LastName,NIC,Address, Email, Contact
+                FROM Customer
+                {whereClause}
+                ORDER BY CustomerName
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            using var cmd = new SqlCommand(pagedQuery, conn);
+            foreach (var param in parameters)
+            {
+                cmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value)); // clone
+            }
+            cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+            cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                customers.Add(new CustomerSearchModel
+                {
+                    CustomerCode = reader.GetString("CustomerCode"),
+                    FirstName = reader.GetString("FirstName"),
+                    LastName = reader.GetString("LastName"),
+                    NIC = reader.GetString("NIC"),
+                    Address = reader.GetString("Address"),
+                    Email = reader.GetString("Email"),
+                    Contact = reader.GetString("Contact")
+                });
+            }
+            return customers;
+
+        }
     }
 }

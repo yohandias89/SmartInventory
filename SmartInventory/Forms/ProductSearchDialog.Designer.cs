@@ -36,7 +36,7 @@
             btnSearch = new Button();
             btnPrevious = new Button();
             btnNext = new Button();
-            lblPageInfo = new TextBox();
+            txtPageInfo = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvSerchedProducts).BeginInit();
             SuspendLayout();
             // 
@@ -111,19 +111,19 @@
             btnNext.UseVisualStyleBackColor = true;
             btnNext.Click += BtnNext_Click;
             // 
-            // lblPageInfo
+            // txtPageInfo
             // 
-            lblPageInfo.Location = new Point(632, 425);
-            lblPageInfo.Name = "lblPageInfo";
-            lblPageInfo.Size = new Size(125, 27);
-            lblPageInfo.TabIndex = 8;
+            txtPageInfo.Location = new Point(632, 425);
+            txtPageInfo.Name = "txtPageInfo";
+            txtPageInfo.Size = new Size(125, 27);
+            txtPageInfo.TabIndex = 8;
             // 
             // ProductSearchDialog
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1178, 458);
-            Controls.Add(lblPageInfo);
+            Controls.Add(txtPageInfo);
             Controls.Add(btnNext);
             Controls.Add(btnPrevious);
             Controls.Add(btnSearch);
@@ -149,6 +149,6 @@
         private Button btnSearch;
         private Button btnPrevious;
         private Button btnNext;
-        private TextBox lblPageInfo;
+        private TextBox txtPageInfo;
     }
 }

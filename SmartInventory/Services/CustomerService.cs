@@ -32,5 +32,29 @@ namespace SmartInventory.Services
         {
             return CustomerRepository.GetNewCustomerCode();
         }
+
+        public static List<CustomerSearchModel> GetCustomerSearchDetails(
+           out int totalRecords,
+           int pageSize,
+           int currentPage,
+           string filterFirstName,
+           string filterLastName,
+           string filterNIC,
+           string filterEmail,
+           string filterContact
+        )
+        {
+            return CustomerRepository.GetSerchedCustomers(
+                out totalRecords,
+                pageSize,
+                currentPage,
+                filterFirstName,
+                filterLastName,
+                filterNIC,
+                filterEmail,
+                filterContact
+            );
+        }
+
     }
 }

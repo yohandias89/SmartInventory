@@ -39,7 +39,7 @@
             lblRemarks = new Label();
             txtRemarks = new RichTextBox();
             label2 = new Label();
-            comboBox1 = new ComboBox();
+            cmbPaymentMethod = new ComboBox();
             lblBarcodeNo = new Label();
             txtBarcodeNo = new TextBox();
             btnProductSearch = new Button();
@@ -158,13 +158,13 @@
             label2.TabIndex = 10;
             label2.Text = "Payment Method :";
             // 
-            // comboBox1
+            // cmbPaymentMethod
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(146, 229);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(239, 28);
-            comboBox1.TabIndex = 11;
+            cmbPaymentMethod.FormattingEnabled = true;
+            cmbPaymentMethod.Location = new Point(146, 229);
+            cmbPaymentMethod.Name = "cmbPaymentMethod";
+            cmbPaymentMethod.Size = new Size(239, 28);
+            cmbPaymentMethod.TabIndex = 11;
             // 
             // lblBarcodeNo
             // 
@@ -284,7 +284,7 @@
             btnAddProduct.TabIndex = 25;
             btnAddProduct.Text = "Add";
             btnAddProduct.UseVisualStyleBackColor = true;
-            btnAddProduct.Click += btnAddProduct_Click;
+            btnAddProduct.Click += BtnAddProduct_Click;
             // 
             // dgvPurchaseDetailes
             // 
@@ -377,7 +377,7 @@
             Controls.Add(btnProductSearch);
             Controls.Add(txtBarcodeNo);
             Controls.Add(lblBarcodeNo);
-            Controls.Add(comboBox1);
+            Controls.Add(cmbPaymentMethod);
             Controls.Add(label2);
             Controls.Add(txtRemarks);
             Controls.Add(lblRemarks);
@@ -409,7 +409,7 @@
         private Label lblRemarks;
         private RichTextBox txtRemarks;
         private Label label2;
-        private ComboBox comboBox1;
+        private ComboBox cmbPaymentMethod;
         private Label lblBarcodeNo;
         private TextBox txtBarcodeNo;
         private Button btnProductSearch;
