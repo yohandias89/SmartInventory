@@ -66,23 +66,43 @@ namespace SmartInventory.Repositories
         {
             using var conn = DatabaseConnection.GetConnection();
             conn.Open();
-            string query = @"insert into Product (CategoryCode, SubCategoryCode, ProductCode, ProductName, NextBatchNo, Status, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
-                           values (@CategoryCode, @SubCategoryCode, @ProductCode, @ProductName, @NextBatchNo, @Status, @CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy)";
-            using var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = product.CategoryCode;
-            cmd.Parameters.Add("@SubCategoryCode", SqlDbType.VarChar).Value = product.SubCategoryCode;
-            cmd.Parameters.Add("@ProductCode", SqlDbType.VarChar).Value = product.ProductCode;
-            cmd.Parameters.Add("@ProductName", SqlDbType.VarChar).Value = product.ProductName;
-            cmd.Parameters.Add("@NextBatchNo", SqlDbType.Int).Value = product.NextBatchNo;
-            cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = product.Status;
-            cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = product.CreatedAt;
-            cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = product.CreatedBy;
-            cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = product.UpdatedAt;
-            cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = product.UpdatedBy;
-            cmd.ExecuteNonQuery();
+            var transaction = conn.BeginTransaction();
+            try
+            {
+                string nextProductCode = GetNextProductCode(product.CategoryCode);
+                product.ProductCode = nextProductCode;
 
-            return true;
+                string query = @"insert into Product (CategoryCode, SubCategoryCode, ProductCode, ProductName, NextBatchNo, Status, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+                           values (@CategoryCode, @SubCategoryCode, @ProductCode, @ProductName, @NextBatchNo, @Status, @CreatedAt, @CreatedBy, @UpdatedAt, @UpdatedBy)";
+                using var cmd = new SqlCommand(query, conn, transaction);
+                cmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = product.CategoryCode;
+                cmd.Parameters.Add("@SubCategoryCode", SqlDbType.VarChar).Value = product.SubCategoryCode;
+                cmd.Parameters.Add("@ProductCode", SqlDbType.VarChar).Value = product.ProductCode;
+                cmd.Parameters.Add("@ProductName", SqlDbType.VarChar).Value = product.ProductName;
+                cmd.Parameters.Add("@NextBatchNo", SqlDbType.Int).Value = product.NextBatchNo;
+                cmd.Parameters.Add("@Status", SqlDbType.TinyInt).Value = product.Status;
+                cmd.Parameters.Add("@CreatedAt", SqlDbType.DateTime).Value = product.CreatedAt;
+                cmd.Parameters.Add("@CreatedBy", SqlDbType.VarChar).Value = product.CreatedBy;
+                cmd.Parameters.Add("@UpdatedAt", SqlDbType.DateTime).Value = product.UpdatedAt;
+                cmd.Parameters.Add("@UpdatedBy", SqlDbType.VarChar).Value = product.UpdatedBy;
+                cmd.ExecuteNonQuery();
+
+                string updateQuery = @"UPDATE Category SET NextNo = NextNo + 1 WHERE CategoryCode = @CategoryCode";
+                using var updateCmd = new SqlCommand(updateQuery, conn, transaction);
+                updateCmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = product.CategoryCode;
+                updateCmd.ExecuteNonQuery();
+
+                transaction.Commit();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
+ 
 
         public static bool UpdateProduct(ProductUpdateModel product)
         {
@@ -124,6 +144,31 @@ namespace SmartInventory.Repositories
             cmd.Parameters.Add("@ProductCode", SqlDbType.VarChar).Value = productCode;
             cmd.ExecuteNonQuery();
             return true;
+        }
+
+        public static string GetNextProductCode(string categoryCode)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"select CategoryCode, Padding, NextNo From Category WHERE Status = 1 and CategoryCode = @CategoryCode";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = categoryCode;
+            var result = cmd.ExecuteScalar();
+            if (result != null)
+            {
+                using var reader = cmd.ExecuteReader();
+                reader.Read();
+                string categoryCodeFromDb = reader.GetString("CategoryCode");
+                int padding = reader.GetInt32("Padding");
+                int nextNo = reader.GetInt32("NextNo");
+                string nextProductCode = categoryCodeFromDb + nextNo.ToString().PadLeft(padding, '0');
+                // Update NextNo in Category table
+                return nextProductCode;
+            }
+            else
+            {
+                throw new Exception("Category not found.");
+            }
         }
 
 

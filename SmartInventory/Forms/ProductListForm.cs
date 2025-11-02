@@ -59,6 +59,9 @@ namespace SmartInventory.Forms
 
         private void btnAddProduct_Click(object sender, EventArgs e)
         {
+            ProductForm productForm = new ProductForm();
+            productForm.FormClosed += (s, args) => LoadProducts(currentPage);
+            productForm.ShowDialog();
 
         }
 

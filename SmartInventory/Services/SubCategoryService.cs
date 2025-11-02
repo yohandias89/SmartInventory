@@ -30,5 +30,10 @@ namespace SmartInventory.Services
             return SubcategoryRepository.DeleteSubCategory(subCategoryCode);
         }
 
+        public static List<SubCategory> GetSubCategoriesByCategoryCode(string categoryCode)
+        {
+            return SubcategoryRepository.GetSubCategoriesByCategoryCode(categoryCode);
+        }
+
     }
 }

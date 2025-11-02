@@ -115,5 +115,32 @@ namespace SmartInventory.Repositories
             cmd.ExecuteNonQuery();
             return true;
         }
+
+        public static List<SubCategory> GetSubCategoriesByCategoryCode(string categoryCode)
+        {
+            List<SubCategory> subCategories = [];
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"select CategoryCode, SubCategoryCode, SubCategoryName, Status, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy from SubCategory
+                            where Status = 1 and CategoryCode = @CategoryCode";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = categoryCode;
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                subCategories.Add(new SubCategory
+                {
+                    CategoryCode = reader.GetString("CategoryCode"),
+                    SubCategoryCode = reader.GetString("SubCategoryCode"),
+                    SubCategoryName = reader.GetString("SubCategoryName"),
+                    Status = reader.GetByte("status"),
+                    CreatedAt = reader.GetDateTime("CreatedAt"),
+                    CreatedBy = reader.GetString("CreatedBy"),
+                    UpdatedAt = reader.GetDateTime("UpdatedAt"),
+                    UpdatedBy = reader.GetString("UpdatedBy")
+                });
+            }
+            return subCategories;
+        }
     }
 }
