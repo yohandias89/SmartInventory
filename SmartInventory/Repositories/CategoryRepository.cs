@@ -8,7 +8,7 @@ namespace SmartInventory.Repositories
 {
     public class CategoryRepository
     {
-        public static List<Category> Categories()
+        public static List<Category> GetCategories()
         {
 
             List<Category> categories = [];
@@ -124,6 +124,64 @@ namespace SmartInventory.Repositories
             cmd.ExecuteNonQuery();
             return true;
 
+        }
+
+        public static bool IsCategoryCodeExists(string categoryCode)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"select count(1) from category where CategoryCode = @CategoryCode";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@CategoryCode", SqlDbType.VarChar).Value = categoryCode;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+
+        public static List<Category> GetPaginatedCategories( 
+            out int totalRecord,
+            int pageSize, 
+            int currentPage
+         )
+        {
+
+            List<Category> categories = [];
+            totalRecord = 0;
+
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string countQuery = @"select count(*) from category where Status = 1";
+            using (var countCmd = new SqlCommand(countQuery, conn))
+            {
+                totalRecord = (int)countCmd.ExecuteScalar();
+            }
+            int offset = (currentPage - 1) * pageSize;
+
+            string query = $@"select CategoryCode, CategoryName, Padding, NextNo, Status,CreatedAt, CreatedBy, UpdatedAt, UpdatedBy 
+                            from category where Status = 1
+                            ORDER BY CategoryCode
+                            OFFSET @Offset ROWS
+                            FETCH NEXT @PageSize ROWS ONLY";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+            cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                categories.Add(new Category
+                {
+                    CategoryCode = reader.GetString("CategoryCode"),
+                    CategoryName = reader.GetString("CategoryName"),
+                    Padding = reader.GetInt32("Padding"),
+                    NextNo = reader.GetInt32("NextNo"),
+                    Status = reader.GetByte("Status"),
+                    CreatedAt = reader.GetDateTime("CreatedAt"),
+                    CreatedBy = reader.GetString("CreatedBy"),
+                    UpdatedAt = reader.GetDateTime("UpdatedAt"),
+                    UpdatedBy = reader.GetString("UpdatedBy")
+                });
+            }
+
+            return categories;
         }
     }
 }

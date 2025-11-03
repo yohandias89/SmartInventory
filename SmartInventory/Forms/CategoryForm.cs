@@ -1,33 +1,105 @@
 ﻿using SmartInventory.DataTransferObjects;
 using SmartInventory.Models;
 using SmartInventory.Services;
-
+using System.Text.RegularExpressions;
 namespace SmartInventory.Forms
 {
     public partial class CategoryForm : Form
     {
         private List<Category> categories = [];
+        private int totalRecords = 0;
+        private int totalPages = 0;
+        private int pageSize = 10;
+        private int currentPage = 1;
         public CategoryForm()
         {
             InitializeComponent();
             btnUpdate.Enabled = false;
             btnDelete.Enabled = false;
-            LoadCategories();
+            this.Load += new System.EventHandler(this.CategoryForm_Load);
             dgvCategories.CellDoubleClick += DgvCategories_CellDoubleClick;
 
         }
 
-        private void RestForm()
+        private void CategoryForm_Load(object? sender, EventArgs e)
+        {
+            LoadCategories(currentPage);
+        }
+
+        private void LoadCategories(int currentPage)
+        {
+            dgvCategories.DataSource = null;
+            categories = CategoryService.GetPaginatedCategories(
+                out totalRecords,
+                out totalPages,
+                pageSize,
+                currentPage
+                );
+            BindingSource bindingSource = new()
+            {
+                DataSource = categories
+            };
+            dgvCategories.DataSource = bindingSource;
+            txtPageInfo.Text = $"Page {currentPage} of {totalPages}";
+
+        }
+
+        private void ResetForm()
         {
             btnUpdate.Enabled = false;
             btnDelete.Enabled = false;
             btnSave.Enabled = true;
+
+            errpCategory.Clear();
 
             txtCategoryCode.ReadOnly = false;
             txtCategoryCode.Text = string.Empty;
             txtCategoryName.Text = string.Empty;
             txtPadding.Text = string.Empty;
             txtNextNo.Text = string.Empty;
+        }
+
+        private bool ValidateForm()
+        {
+            errpCategory.Clear();
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace(txtCategoryCode.Text))
+            {
+                errpCategory.SetError(txtCategoryCode, "Category Code is required.");
+                isValid = false;
+            }
+            else
+            {
+                if (!Regex.IsMatch(txtCategoryCode.Text, "^[A-Z]{4}$"))
+                {
+                    errpCategory.SetError(txtCategoryCode, "Category Code must be exactly 4 uppercase letters.");
+                    isValid = false;
+                }
+            }
+            if (string.IsNullOrWhiteSpace(txtCategoryName.Text))
+            {
+                errpCategory.SetError(txtCategoryName, "Category Name is required.");
+                isValid = false;
+            }
+            else
+            {
+                if (txtCategoryName.Text.Length > 100)
+                {
+                    errpCategory.SetError(txtCategoryName, "Category Name cannot exceed 100 characters.");
+                    isValid = false;
+                }
+            }
+            if (!int.TryParse(txtPadding.Text, out _))
+            {
+                errpCategory.SetError(txtPadding, "Padding must be a valid number.");
+                isValid = false;
+            }
+            if (!int.TryParse(txtNextNo.Text, out _))
+            {
+                errpCategory.SetError(txtNextNo, "NextNo must be a valid number.");
+                isValid = false;
+            }
+            return isValid;
         }
 
         private void DgvCategories_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
@@ -48,55 +120,64 @@ namespace SmartInventory.Forms
             }
         }
 
-        private void LoadCategories()
-        {
-            dgvCategories.DataSource = null;
-            categories = CategoryService.GetCategories();
-            BindingSource bindingSource = new()
-            {
-                DataSource = categories
-            };
-            dgvCategories.DataSource = bindingSource;
-
-        }
-
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            try
+            DialogResult result = MessageBox.Show(
+                    "Are you sure you want to save this category?", "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
             {
+                if (!ValidateForm())
+                {
+                    return;
+                }
+                if (CategoryService.IsCategoryCodeExists(txtCategoryCode.Text))
+                {
+                    errpCategory.SetError(txtCategoryCode, "Category Code already exists.");
+                    return;
+                }
+
+                int padding = int.Parse(txtPadding.Text);
+                int nextNo = int.Parse(txtNextNo.Text);
+
                 Category category = new()
                 {
                     CategoryCode = txtCategoryCode.Text,
                     CategoryName = txtCategoryName.Text,
-                    Padding = Convert.ToInt32(txtPadding.Text),
-                    NextNo = Convert.ToInt32(txtNextNo.Text),
+                    Padding = padding,
+                    NextNo = nextNo,
                     CreatedBy = "EMP00001",
                     UpdatedBy = "EMP00001"
                 };
 
-                bool result = CategoryService.CreateCategory(category);
-                if (result)
+
+                try
                 {
-                    RestForm();
-                    LoadCategories();
-                    MessageBox.Show("Category created successfully!");
+                    CategoryService.CreateCategory(category);
+                    MessageBox.Show("Category created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ResetForm();
+                    LoadCategories(currentPage);
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Category creation failed!");
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
 
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
-
-            try
+            DialogResult result = MessageBox.Show(
+                    "Are you sure you want to update this category?", "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
             {
+                if (!ValidateForm())
+                {
+                    return;
+                }
                 CategoryUpdateModel category = new()
                 {
                     CategoryCode = txtCategoryCode.Text,
@@ -105,58 +186,84 @@ namespace SmartInventory.Forms
                     NextNo = Convert.ToInt32(txtNextNo.Text),
                     UpdatedBy = "EMP00001"
                 };
-                bool result = CategoryService.CategoryUpdate(category);
-                if (result)
+
+                try
                 {
-                    RestForm();
-                    LoadCategories();
-                    MessageBox.Show("Category updated successfully!");
+                    CategoryService.CategoryUpdate(category);
+                    MessageBox.Show("Category updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ResetForm();
+                    LoadCategories(currentPage);
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Category update failed!");
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
 
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
         {
-            try
+            DialogResult result = MessageBox.Show(
+                    "Are you sure you want to delete this category?", "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
             {
+
+                if (!ValidateForm())
+                {
+                    return;
+                }
                 string categoryCode = txtCategoryCode.Text;
-                if (!string.IsNullOrEmpty(categoryCode))
+
+                try
                 {
-                    bool result = CategoryService.DeleteCategory(categoryCode);
-                    if (result)
-                    {
-                        RestForm();
-                        LoadCategories();
-                        MessageBox.Show("category deleted successfully!");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Category delete failed!");
-                    }
+                    CategoryService.DeleteCategory(categoryCode);
+                    MessageBox.Show("category deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ResetForm();
+                    LoadCategories(currentPage);
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Please select valid category to delete!");
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
 
         }
 
         private void BtnClear_Click(object sender, EventArgs e)
         {
-            RestForm();
+            DialogResult result = MessageBox.Show(
+                    "Are you sure you want to clear the form?", "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                ResetForm();
+            }
         }
+
+        private void BtnPrevious_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 1)
+            {
+                currentPage--;
+                LoadCategories(currentPage);
+            }
+
+        }
+
+        private void BtnNext_Click(object sender, EventArgs e)
+        {
+            if (currentPage < totalPages)
+            {
+                currentPage++;
+                LoadCategories(currentPage);
+            }
+
+        }
+
+
     }
 }

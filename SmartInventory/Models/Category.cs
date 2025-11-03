@@ -1,4 +1,7 @@
-﻿namespace SmartInventory.Models
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace SmartInventory.Models
 {
     public class Category : BaseModel
     {

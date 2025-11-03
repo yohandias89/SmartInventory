@@ -9,7 +9,7 @@ namespace SmartInventory.Services
 
         public static List<Category> GetCategories()
         {
-            return CategoryRepository.Categories();
+            return CategoryRepository.GetCategories();
         }
 
         public static Category GetCategory(string categoryCode)
@@ -30,6 +30,26 @@ namespace SmartInventory.Services
         public static bool DeleteCategory(string categoryCode)
         {
             return CategoryRepository.DeleteCategory(categoryCode);
+        }
+
+        public static bool IsCategoryCodeExists(string categoryCode)
+        {
+            return CategoryRepository.IsCategoryCodeExists(categoryCode);
+        }
+        public static List<Category> GetPaginatedCategories(
+            out int totalRecords, 
+            out int totalPages,
+            int pageSize,
+            int currentPage
+            )
+        {
+            var categories = CategoryRepository.GetPaginatedCategories(
+                out totalRecords,
+                pageSize,
+                currentPage
+                );
+            totalPages = (int)System.Math.Ceiling((double)totalRecords / pageSize);
+            return categories;
         }
 
     }

@@ -52,13 +52,15 @@
             aboutToolStripMenuItem = new ToolStripMenuItem();
             aboutSoftwareToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            dashboardToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, viewToolStripMenuItem, transactionToolStripMenuItem, aboutToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolStripMenuItem1, viewToolStripMenuItem, transactionToolStripMenuItem, aboutToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1375, 28);
@@ -75,13 +77,13 @@
             // logoutToolStripMenuItem
             // 
             logoutToolStripMenuItem.Name = "logoutToolStripMenuItem";
-            logoutToolStripMenuItem.Size = new Size(139, 26);
+            logoutToolStripMenuItem.Size = new Size(224, 26);
             logoutToolStripMenuItem.Text = "Logout";
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(139, 26);
+            exitToolStripMenuItem.Size = new Size(224, 26);
             exitToolStripMenuItem.Text = "Exit";
             // 
             // editToolStripMenuItem
@@ -115,14 +117,14 @@
             // productListToolStripMenuItem
             // 
             productListToolStripMenuItem.Name = "productListToolStripMenuItem";
-            productListToolStripMenuItem.Size = new Size(224, 26);
+            productListToolStripMenuItem.Size = new Size(184, 26);
             productListToolStripMenuItem.Text = "Product List";
             productListToolStripMenuItem.Click += productListToolStripMenuItem_Click;
             // 
             // productBatchToolStripMenuItem
             // 
             productBatchToolStripMenuItem.Name = "productBatchToolStripMenuItem";
-            productBatchToolStripMenuItem.Size = new Size(224, 26);
+            productBatchToolStripMenuItem.Size = new Size(184, 26);
             productBatchToolStripMenuItem.Text = "Product Batch";
             // 
             // employeeToolStripMenuItem
@@ -189,13 +191,13 @@
             // systemUsersToolStripMenuItem
             // 
             systemUsersToolStripMenuItem.Name = "systemUsersToolStripMenuItem";
-            systemUsersToolStripMenuItem.Size = new Size(178, 26);
+            systemUsersToolStripMenuItem.Size = new Size(224, 26);
             systemUsersToolStripMenuItem.Text = "System Users";
             // 
             // userRoleToolStripMenuItem
             // 
             userRoleToolStripMenuItem.Name = "userRoleToolStripMenuItem";
-            userRoleToolStripMenuItem.Size = new Size(178, 26);
+            userRoleToolStripMenuItem.Size = new Size(224, 26);
             userRoleToolStripMenuItem.Text = "User Role";
             // 
             // aboutToolStripMenuItem
@@ -208,14 +210,28 @@
             // aboutSoftwareToolStripMenuItem
             // 
             aboutSoftwareToolStripMenuItem.Name = "aboutSoftwareToolStripMenuItem";
-            aboutSoftwareToolStripMenuItem.Size = new Size(196, 26);
+            aboutSoftwareToolStripMenuItem.Size = new Size(224, 26);
             aboutSoftwareToolStripMenuItem.Text = "About Software";
             // 
             // helpToolStripMenuItem
             // 
             helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            helpToolStripMenuItem.Size = new Size(196, 26);
+            helpToolStripMenuItem.Size = new Size(224, 26);
             helpToolStripMenuItem.Text = "Help";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { dashboardToolStripMenuItem });
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(55, 24);
+            toolStripMenuItem1.Text = "View";
+            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
+            // 
+            // dashboardToolStripMenuItem
+            // 
+            dashboardToolStripMenuItem.Name = "dashboardToolStripMenuItem";
+            dashboardToolStripMenuItem.Size = new Size(224, 26);
+            dashboardToolStripMenuItem.Text = "Dashboard";
             // 
             // MainForm
             // 
@@ -260,5 +276,7 @@
         private ToolStripMenuItem aboutToolStripMenuItem;
         private ToolStripMenuItem aboutSoftwareToolStripMenuItem;
         private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem dashboardToolStripMenuItem;
     }
 }

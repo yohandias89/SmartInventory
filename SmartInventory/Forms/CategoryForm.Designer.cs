@@ -28,20 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lblCategoryCode = new Label();
             txtCategoryCode = new TextBox();
             lblCategoryName = new Label();
             txtCategoryName = new TextBox();
             lblPadding = new Label();
             txtPadding = new TextBox();
-            label1 = new Label();
+            lblNextNo = new Label();
             txtNextNo = new TextBox();
             btnSave = new Button();
             btnUpdate = new Button();
             btnDelete = new Button();
             btnClear = new Button();
             dgvCategories = new DataGridView();
+            errpCategory = new ErrorProvider(components);
+            btnPrevious = new Button();
+            btnNext = new Button();
+            txtPageInfo = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvCategories).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)errpCategory).BeginInit();
             SuspendLayout();
             // 
             // lblCategoryCode
@@ -92,14 +98,14 @@
             txtPadding.Size = new Size(213, 27);
             txtPadding.TabIndex = 6;
             // 
-            // label1
+            // lblNextNo
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(81, 144);
-            label1.Name = "label1";
-            label1.Size = new Size(71, 20);
-            label1.TabIndex = 7;
-            label1.Text = "Next No :";
+            lblNextNo.AutoSize = true;
+            lblNextNo.Location = new Point(81, 144);
+            lblNextNo.Name = "lblNextNo";
+            lblNextNo.Size = new Size(71, 20);
+            lblNextNo.TabIndex = 7;
+            lblNextNo.Text = "Next No :";
             // 
             // txtNextNo
             // 
@@ -151,34 +157,70 @@
             // dgvCategories
             // 
             dgvCategories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvCategories.Location = new Point(37, 240);
+            dgvCategories.Location = new Point(-4, 224);
             dgvCategories.Name = "dgvCategories";
             dgvCategories.RowHeadersWidth = 51;
-            dgvCategories.Size = new Size(1298, 415);
+            dgvCategories.Size = new Size(1229, 377);
             dgvCategories.TabIndex = 17;
+            // 
+            // errpCategory
+            // 
+            errpCategory.ContainerControl = this;
+            // 
+            // btnPrevious
+            // 
+            btnPrevious.Location = new Point(395, 607);
+            btnPrevious.Name = "btnPrevious";
+            btnPrevious.Size = new Size(94, 29);
+            btnPrevious.TabIndex = 18;
+            btnPrevious.Text = "<<";
+            btnPrevious.UseVisualStyleBackColor = true;
+            btnPrevious.Click += BtnPrevious_Click;
+            // 
+            // btnNext
+            // 
+            btnNext.Location = new Point(495, 607);
+            btnNext.Name = "btnNext";
+            btnNext.Size = new Size(94, 29);
+            btnNext.TabIndex = 19;
+            btnNext.Text = ">>";
+            btnNext.UseVisualStyleBackColor = true;
+            btnNext.Click += BtnNext_Click;
+            // 
+            // txtPageInfo
+            // 
+            txtPageInfo.Location = new Point(595, 607);
+            txtPageInfo.Name = "txtPageInfo";
+            txtPageInfo.Size = new Size(125, 27);
+            txtPageInfo.TabIndex = 20;
             // 
             // CategoryForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1373, 683);
+            ClientSize = new Size(1228, 648);
+            Controls.Add(txtPageInfo);
+            Controls.Add(btnNext);
+            Controls.Add(btnPrevious);
             Controls.Add(dgvCategories);
             Controls.Add(btnClear);
             Controls.Add(btnDelete);
             Controls.Add(btnUpdate);
             Controls.Add(btnSave);
             Controls.Add(txtNextNo);
-            Controls.Add(label1);
+            Controls.Add(lblNextNo);
             Controls.Add(txtPadding);
             Controls.Add(lblPadding);
             Controls.Add(txtCategoryName);
             Controls.Add(lblCategoryName);
             Controls.Add(txtCategoryCode);
             Controls.Add(lblCategoryCode);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "CategoryForm";
-            Text = "CategoryForm";
+            Text = "Category";
             ((System.ComponentModel.ISupportInitialize)dgvCategories).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errpCategory).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -190,12 +232,16 @@
         private TextBox txtCategoryName;
         private Label lblPadding;
         private TextBox txtPadding;
-        private Label label1;
+        private Label lblNextNo;
         private TextBox txtNextNo;
         private Button btnSave;
         private Button btnUpdate;
         private Button btnDelete;
         private Button btnClear;
         private DataGridView dgvCategories;
+        private ErrorProvider errpCategory;
+        private TextBox txtPageInfo;
+        private Button btnNext;
+        private Button btnPrevious;
     }
 }

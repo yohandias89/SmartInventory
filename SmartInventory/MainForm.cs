@@ -66,5 +66,10 @@ namespace SmartInventory
             productListForm.MdiParent = this;
             productListForm.Show();
         }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
