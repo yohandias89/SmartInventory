@@ -1,54 +1,138 @@
 ﻿using SmartInventory.DataTransferObjects;
 using SmartInventory.Models;
 using SmartInventory.Services;
+using System.Text.RegularExpressions;
 
 namespace SmartInventory.Forms
 {
     public partial class EmployeeForm : Form
     {
-        private List<Employee> employees = [];
-        public EmployeeForm()
+        private readonly Employee? employee = new();
+        public EmployeeForm(Employee? employee = null)
         {
             InitializeComponent();
             btnUpdate.Enabled = false;
             btnDelete.Enabled = false;
-            LoadEmployees();
-            dgvEmployees.CellDoubleClick += DgvEmployees_CellDoubleClick;
+            this.employee = employee;
+            this.Load += EmployeeForm_Load;
+
         }
 
-        private void DgvEmployees_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+        private void EmployeeForm_Load(object? sender, EventArgs e)
         {
-            if (e.RowIndex >= 0 && e.RowIndex <= employees.Count)
-            {
-                Employee selectedEmployee = employees[e.RowIndex];
-                if (selectedEmployee != null)
-                {
-                    txtEmployeeCode.Text = selectedEmployee.EmployeeCode;
-                    txtFirstName.Text = selectedEmployee.FirstName;
-                    txtLastName.Text = selectedEmployee.LastName;
-                    txtDateOfBirth.Text = selectedEmployee.DateOfBirth.ToString("yyyy-MM-dd");
-                    txtNIC.Text = selectedEmployee.NIC;
-                    txtAddress.Text = selectedEmployee.Address;
-                    txtEmail.Text = selectedEmployee.Email;
-                    txtContact.Text = selectedEmployee.Contact;
-                    btnSave.Enabled = false;
-                    btnUpdate.Enabled = true;
-                    btnDelete.Enabled = true;
-                }
+            LoadEmployee();
+        }
+
+        private void LoadEmployee()
+        {
+            if (employee != null) {
+                txtEmployeeCode.Text = employee.EmployeeCode;
+                txtFirstName.Text = employee.FirstName;
+                txtLastName.Text = employee.LastName;
+                txtDateOfBirth.Text = employee.DateOfBirth.ToString("yyy-MM-dd");
+                txtNIC.Text = employee.NIC;
+                txtAddress.Text = employee.Address;
+                txtEmail.Text = employee.Email;
+                txtContact.Text = employee.Contact;
+
+                btnSave.Enabled = false;
+                btnUpdate.Enabled = true;
+                btnDelete.Enabled = true;
             }
         }
-
-        private void LoadEmployees()
+        private bool FieldValidate()
         {
-            dgvEmployees.DataSource = null;
-            employees = EmployeeService.GetEmployees();
-            BindingSource bindingSource = new()
-            {   
-                DataSource = employees
-            };
-            dgvEmployees.DataSource = bindingSource;
-
+            errpEmployeeForm.Clear();
+            bool isValidate = true;
+            if(string.IsNullOrWhiteSpace(txtFirstName.Text))
+            {
+                errpEmployeeForm.SetError(txtFirstName, "First name is required.");
+                isValidate = false; 
+            }
+            if (string.IsNullOrWhiteSpace(txtLastName.Text))
+            {
+                errpEmployeeForm.SetError(txtLastName, "Last name is required.");
+                isValidate = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtDateOfBirth.Text)) {
+                errpEmployeeForm.SetError(txtDateOfBirth, "Date of birth is required.");
+                isValidate = false;
+            }else if (!Regex.IsMatch(txtDateOfBirth.Text, @"^\d{4}-\d{2}-\d{2}$"))
+            {
+                errpEmployeeForm.SetError(txtDateOfBirth, "Date of birth should be a valid date format 1900-01-01");
+                isValidate = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                errpEmployeeForm.SetError(txtNIC, "NIC is required.");
+                isValidate = false;
+            } else if (!Regex.IsMatch(txtNIC.Text, @"(^\d{9}[vVxX]|^\d{12})$"))
+            {
+                errpEmployeeForm.SetError(txtNIC, "NIC should be in a valid format.");
+                isValidate = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtAddress.Text)) 
+            {
+                errpEmployeeForm.SetError(txtAddress, "Address is required");
+                isValidate = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                errpEmployeeForm.SetError(txtEmail, "Email is required.");
+                isValidate = false;
+            }else if(!Regex.IsMatch(txtEmail.Text, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                errpEmployeeForm.SetError(txtEmail, "Email should be a valid email.");
+                isValidate = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtContact.Text))
+            {
+                errpEmployeeForm.SetError(txtContact, "Contact is required");
+                isValidate = false;
+            }else if(!Regex.IsMatch(txtContact.Text, @"^0\d{9}$"))
+            {
+                errpEmployeeForm.SetError(txtContact, "Contact should be valid 10 dights phone number");
+                isValidate = false;
+            }
+              return isValidate;
         }
+
+        private bool DataValidate()
+        { 
+            bool isValidate = true;
+            try
+            {
+                if (EmployeeService.IsExistingNIC(txtNIC.Text))
+                {
+                    errpEmployeeForm.SetError(txtNIC, "NIC already exists");
+                    isValidate = false;
+                }
+                if (EmployeeService.IsExistingEmail(txtEmail.Text))
+                {
+                    errpEmployeeForm.SetError(txtEmail, "Email already exists");
+                    isValidate = false;
+                }
+                if (EmployeeService.IsExistingContact(txtContact.Text))
+                {
+                    errpEmployeeForm.SetError(txtContact, "Contact already exists");
+                    isValidate = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                isValidate = false;
+            }
+            return isValidate;
+        }
+
+        private bool FormValidate()
+        {
+            bool isFiledValidate = FieldValidate();
+            bool isDataValidate = DataValidate();
+            return isFiledValidate && isDataValidate;
+        }
+
 
         private void FormClear()
         {
@@ -68,6 +152,10 @@ namespace SmartInventory.Forms
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
+            if (!FormValidate())
+            {
+                return;
+            }
             try
             {
                 string generatedCode = EmployeeService.GetEmployeeCode();
@@ -86,8 +174,8 @@ namespace SmartInventory.Forms
                 };
                 EmployeeService.CreateEmployee(employee);
                 MessageBox.Show("Employee added successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadEmployees();
                 FormClear();
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
@@ -98,9 +186,8 @@ namespace SmartInventory.Forms
 
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(txtEmployeeCode.Text))
+            if (!FieldValidate())
             {
-                MessageBox.Show("Please select an employee to update.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             try
@@ -119,8 +206,8 @@ namespace SmartInventory.Forms
                 };
                 EmployeeService.UpdateEmployee(employee);
                 MessageBox.Show("Employee updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadEmployees();
                 FormClear();
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
@@ -131,17 +218,16 @@ namespace SmartInventory.Forms
 
         private void BtnDelete_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtEmployeeCode.Text))
+            if (!FieldValidate())
             {
-                MessageBox.Show("Please select an employee to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             try
             {
                 EmployeeService.DeleteEmployee(txtEmployeeCode.Text);
                 MessageBox.Show("Employee deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadEmployees();
                 FormClear();
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {

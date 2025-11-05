@@ -33,7 +33,7 @@ namespace SmartInventory.Services
             return CustomerRepository.GetNewCustomerCode();
         }
 
-        public static List<CustomerSearchModel> GetCustomerSearchDetails(
+        public static List<Customer> GetPaginatedCustomers(
            out int totalRecords,
            out int totalPages,
            int pageSize,
@@ -45,7 +45,7 @@ namespace SmartInventory.Services
            string filterContact
         )
         {
-            var customers = CustomerRepository.GetSearchedCustomers(
+            var customers = CustomerRepository.GetPaginatedCustomers(
                 out totalRecords,
                 pageSize,
                 currentPage,
@@ -56,6 +56,21 @@ namespace SmartInventory.Services
                 filterContact);
             totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
             return customers;
+        }
+
+        public static bool IsExistingNIC(string nic)
+        {
+            return CustomerRepository.IsExistingNIC(nic);
+        }
+
+        public static bool IsExistingEmail(string email)
+        {
+            return CustomerRepository.IsExistingEmail(email);
+        }
+
+        public static bool IsExistingContact(string contact) 
+        { 
+             return CustomerRepository.IsExistingContact(contact);
         }
 
     }

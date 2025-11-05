@@ -5,14 +5,15 @@ namespace SmartInventory.Forms
 {
     public partial class CustomerSearchDialog : Form
     {
-        private List<CustomerSearchModel> searchModels = new();
-        public CustomerSearchModel? SelectedCustomer { get; private set; }
+        private List<Customer> searchModels = new();
+        public Customer? SelectedCustomer { get; private set; }
         private BindingSource bindingSource = new();
 
         private int pageSize = 10;
         private int currentPage = 1;
         private int totalRecords = 0;
         private int totalPages = 0;
+
         private string filterFirstName = "";
         private string filterLastName = "";
         private string filterNIC = "";
@@ -40,7 +41,7 @@ namespace SmartInventory.Forms
 
         private void CustomerSearchDialog_Load(object? sender, EventArgs e)
         {
-            LoadPage(1);
+            LoadPage(currentPage);
         }
 
         private void ApplyFilters()
@@ -56,11 +57,11 @@ namespace SmartInventory.Forms
 
         private void LoadPage(int pageNumber)
         {
-            searchModels = CustomerService.GetCustomerSearchDetails(
+            searchModels = CustomerService.GetPaginatedCustomers(
                 out totalRecords,
                 out totalPages,
                 pageSize,
-                currentPage,
+                pageNumber,
                 filterFirstName,
                 filterLastName,
                 filterNIC,

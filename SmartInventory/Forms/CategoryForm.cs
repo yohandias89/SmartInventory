@@ -14,6 +14,57 @@ namespace SmartInventory.Forms
         public CategoryForm()
         {
             InitializeComponent();
+            dgvCategories.AutoGenerateColumns = false;
+            dgvCategories.AllowUserToAddRows = false;
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn { 
+                DataPropertyName = "CategoryCode",
+                HeaderText = "Category Code"
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "CategoryName",
+                HeaderText = "Category Name"
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "Padding",
+                HeaderText = "Padding"
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "NextNo",
+                HeaderText = "Next No"
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "CreatedAt",
+                HeaderText = "Created At",
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Format = "yyyy-MM-dd HH:mm"
+                }
+
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "CreatedBy",
+                HeaderText = "Created By"
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "UpdatedAt",
+                HeaderText = "Updated At",
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Format = "yyyy-MM-dd HH:mm"
+                }
+            });
+            dgvCategories.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "UpdatedBy",
+                HeaderText = "Updated By"
+            });
+
             btnUpdate.Enabled = false;
             btnDelete.Enabled = false;
             this.Load += new System.EventHandler(this.CategoryForm_Load);

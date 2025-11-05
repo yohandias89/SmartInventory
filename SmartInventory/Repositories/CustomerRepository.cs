@@ -185,7 +185,7 @@ namespace SmartInventory.Repositories
 
         }
 
-        public static List<CustomerSearchModel> GetSearchedCustomers(
+        public static List<Customer> GetPaginatedCustomers(
             out int totalRecords,
             int pageSize,
             int currentPage,
@@ -196,7 +196,7 @@ namespace SmartInventory.Repositories
             string filterContact
         )
         {
-            List<CustomerSearchModel> customers = [];
+            List<Customer> customers = [];
             var whereClauses = new List<string>();
             var parameters = new List<SqlParameter>();
             totalRecords = 0;
@@ -243,10 +243,10 @@ namespace SmartInventory.Repositories
 
             int offset = (currentPage - 1) * pageSize;
             string pagedQuery = $@"
-                SELECT CustomerCode, FirstName, LastName,NIC,Address, Email, Contact
+                SELECT CustomerCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy
                 FROM Customer
                 {whereClause}
-                ORDER BY FirstName, LastName
+                ORDER BY CustomerCode
                 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
             using var cmd = new SqlCommand(pagedQuery, conn);
@@ -259,19 +259,57 @@ namespace SmartInventory.Repositories
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                customers.Add(new CustomerSearchModel
+                customers.Add(new Customer
                 {
                     CustomerCode = reader.GetString("CustomerCode"),
                     FirstName = reader.GetString("FirstName"),
                     LastName = reader.GetString("LastName"),
+                    DateOfBirth = DateOnly.FromDateTime(reader.GetDateTime("DateOfBirth")),
                     NIC = reader.GetString("NIC"),
                     Address = reader.GetString("Address"),
                     Email = reader.GetString("Email"),
-                    Contact = reader.GetString("Contact")
+                    Contact = reader.GetString("Contact"),
+                    CreatedAt = reader.GetDateTime("CreatedAt"),
+                    CreatedBy = reader.GetString("CreatedBY"),
+                    UpdatedAt = reader.GetDateTime("UpdatedAt"),
+                    UpdatedBy = reader.GetString("UpdatedBy")
+                    
                 });
             }
             return customers;
 
+        }
+        public static bool IsExistingNIC(string nic)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Customer WHERE NIC = @NIC";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@NIC", SqlDbType.VarChar).Value = nic;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+
+        public static bool IsExistingEmail(string email)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Customer WHERE Email = @Email";
+            using  var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = email;
+            int count = (int)cmd.ExecuteScalar();
+            return count >0;
+        }
+        
+        public static bool IsExistingContact(string contact)
+        {
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Customer WHERE Contact = @Contact";
+            using var cmd = new SqlCommand (query, conn);
+            cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = contact;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
         }
     }
 }

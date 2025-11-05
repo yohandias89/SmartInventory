@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lblEmployeeCode = new Label();
             txtEmployeeCode = new TextBox();
             lblFirstName = new Label();
@@ -48,8 +49,8 @@
             btnUpdate = new Button();
             btnDelete = new Button();
             btnClear = new Button();
-            dgvEmployees = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)dgvEmployees).BeginInit();
+            errpEmployeeForm = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errpEmployeeForm).BeginInit();
             SuspendLayout();
             // 
             // lblEmployeeCode
@@ -221,21 +222,15 @@
             btnClear.UseVisualStyleBackColor = true;
             btnClear.Click += BtnClear_Click;
             // 
-            // dgvEmployees
+            // errpEmployeeForm
             // 
-            dgvEmployees.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvEmployees.Location = new Point(25, 317);
-            dgvEmployees.Name = "dgvEmployees";
-            dgvEmployees.RowHeadersWidth = 51;
-            dgvEmployees.Size = new Size(1356, 296);
-            dgvEmployees.TabIndex = 20;
+            errpEmployeeForm.ContainerControl = this;
             // 
             // EmployeeForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1380, 625);
-            Controls.Add(dgvEmployees);
+            ClientSize = new Size(932, 326);
             Controls.Add(btnClear);
             Controls.Add(btnDelete);
             Controls.Add(btnUpdate);
@@ -256,9 +251,10 @@
             Controls.Add(lblFirstName);
             Controls.Add(txtEmployeeCode);
             Controls.Add(lblEmployeeCode);
+            MaximizeBox = false;
             Name = "EmployeeForm";
-            Text = "EmployeeForm";
-            ((System.ComponentModel.ISupportInitialize)dgvEmployees).EndInit();
+            Text = "Employee Form";
+            ((System.ComponentModel.ISupportInitialize)errpEmployeeForm).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -285,6 +281,6 @@
         private Button btnUpdate;
         private Button btnDelete;
         private Button btnClear;
-        private DataGridView dgvEmployees;
+        private ErrorProvider errpEmployeeForm;
     }
 }

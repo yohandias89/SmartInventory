@@ -191,6 +191,7 @@
             // 
             txtPageInfo.Location = new Point(595, 607);
             txtPageInfo.Name = "txtPageInfo";
+            txtPageInfo.ReadOnly = true;
             txtPageInfo.Size = new Size(125, 27);
             txtPageInfo.TabIndex = 20;
             // 

@@ -184,5 +184,133 @@ namespace SmartInventory.Repositories
             throw new Exception("Serial configuration for 'EMP' not found.");
 
         }
+
+        public static List<Employee> GetPaginatedEmployees(
+            out int totalRecords, 
+            int pageSize, 
+            int currentPage,
+            string filterFirstName,
+            string filterLastName,
+            string filterNIC,
+            string filterEmail,
+            string filterContact)
+        {
+            List<Employee> employees = [];
+            var whereClauses = new List<String>();
+            var parameters = new List<SqlParameter>();
+            totalRecords = 0;
+
+            
+
+            using var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            if (!string.IsNullOrEmpty(filterFirstName))
+            {
+                whereClauses.Add("FirstName LIKE @FirstName");
+                parameters.Add(new SqlParameter("@FirstName", $"%{filterFirstName}%"));
+            }
+            if (!string.IsNullOrEmpty(filterLastName))
+            {
+                whereClauses.Add("LastName LIKE @LastName");
+                parameters.Add(new SqlParameter("@LastName", $"%{filterLastName}%"));
+            }
+            if (!string.IsNullOrEmpty(filterNIC))
+            {
+                whereClauses.Add("NIC LIKE @NIC");
+                parameters.Add(new SqlParameter("@NIC", $"%{filterNIC}%"));
+            }
+            if (!string.IsNullOrEmpty(filterEmail))
+            {
+                whereClauses.Add("Email LIKE @Email");
+                parameters.Add(new SqlParameter("@Email", $"%{filterEmail}%"));
+            }
+            if (!string.IsNullOrEmpty(filterContact))
+            {
+                whereClauses.Add("Contact LIKE @Contact");
+                parameters.Add(new SqlParameter("@Contact", $"%{filterContact}%"));
+            }
+            string whereClause = whereClauses.Count > 0 ? "WHERE " + string.Join(" AND ", whereClauses) : "";
+            string countQuery = $@"SELECT COUNT(*)
+                                FROM Employee 
+                                {whereClause}";
+            using var countCmd = new SqlCommand(countQuery, conn);
+            foreach (var param in parameters)
+            {
+                countCmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
+            }
+
+            totalRecords = (int)countCmd.ExecuteScalar();
+
+            int offset = (currentPage - 1) * pageSize;
+
+            string pagedQuery = $@"
+                SELECT EmployeeCode, FirstName, LastName, DateOfBirth, NIC, Address, Email, Contact, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy
+                FROM Employee
+                {whereClause}
+                ORDER BY EmployeeCode
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            using var cmd = new SqlCommand(pagedQuery, conn);
+            foreach (var param in parameters)
+            {
+                cmd.Parameters.Add(new SqlParameter(param.ParameterName, param.Value));
+            }
+            cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+            cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                employees.Add(new Employee
+                {
+                    EmployeeCode = reader.GetString("EmployeeCode"),
+                    FirstName = reader.GetString("FirstName"),
+                    LastName = reader.GetString("LastName"),
+                    DateOfBirth = DateOnly.FromDateTime(reader.GetDateTime("DateOfBirth")),
+                    NIC = reader.GetString("NIC"),
+                    Address = reader.GetString("Address"),
+                    Email = reader.GetString("Email"),
+                    Contact = reader.GetString("Contact"),
+                    CreatedAt = reader.GetDateTime("CreatedAt"),
+                    CreatedBy = reader.GetString("CreatedBY"),
+                    UpdatedAt = reader.GetDateTime("UpdatedAt"),
+                    UpdatedBy = reader.GetString("UpdatedBy")
+
+                });
+            }
+            return employees;
+        }
+
+        public static bool IsExistingNIC (string nic)
+        {
+            var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Employee WHERE NIC = @NIC";
+            var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@NIC", SqlDbType.VarChar).Value = nic;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
+        public static bool IsExistingEmail(string email)
+        {
+            var conn = DatabaseConnection.GetConnection(); 
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Employee WHERE Email = @Email;";
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = email;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+
+        }
+
+        public static bool IsExistingContact(string contact)
+        {
+            var conn = DatabaseConnection.GetConnection();
+            conn.Open();
+            string query = @"SELECT COUNT(*) FROM Employee WHERE Contact = @Contact;";
+            using var cmd =new SqlCommand(query, conn);
+            cmd.Parameters.Add("@Contact", SqlDbType.VarChar).Value = contact;
+            int count = (int)cmd.ExecuteScalar();
+            return count > 0;
+        }
     }
 }

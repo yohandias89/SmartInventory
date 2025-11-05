@@ -1,4 +1,5 @@
 ﻿using SmartInventory.Forms;
+using SmartInventory.Forms.CustomerForms;
 
 namespace SmartInventory
 {
@@ -26,17 +27,18 @@ namespace SmartInventory
 
         private void CustomerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CustomerForm customerForm = new CustomerForm();
-            customerForm.MdiParent = this;
-            customerForm.Show();
+            CustomerList customerList = new CustomerList();
+            customerList.MdiParent = this;
+            customerList.Show();
+
 
         }
 
         private void EmployeeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EmployeeForm employeeForm = new EmployeeForm();
-            employeeForm.MdiParent = this;
-            employeeForm.Show();
+            EmployeeList employeeList = new EmployeeList();
+            employeeList.MdiParent = this;
+            employeeList.Show();
         }
 
         private void SupplierToolStripMenuItem_Click(object sender, EventArgs e)

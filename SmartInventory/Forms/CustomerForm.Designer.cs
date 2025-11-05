@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lblCustomerCode = new Label();
             txtCustomerCode = new TextBox();
             lblFirstName = new Label();
@@ -48,8 +49,8 @@
             btnUpdate = new Button();
             btnDelete = new Button();
             btnClear = new Button();
-            dgvCustomers = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)dgvCustomers).BeginInit();
+            errpCustomerForm = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errpCustomerForm).BeginInit();
             SuspendLayout();
             // 
             // lblCustomerCode
@@ -221,21 +222,15 @@
             btnClear.UseVisualStyleBackColor = true;
             btnClear.Click += BtnClear_Click;
             // 
-            // dgvCustomers
+            // errpCustomerForm
             // 
-            dgvCustomers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvCustomers.Location = new Point(13, 324);
-            dgvCustomers.Name = "dgvCustomers";
-            dgvCustomers.RowHeadersWidth = 51;
-            dgvCustomers.Size = new Size(1317, 339);
-            dgvCustomers.TabIndex = 20;
+            errpCustomerForm.ContainerControl = this;
             // 
             // CustomerForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1342, 671);
-            Controls.Add(dgvCustomers);
+            ClientSize = new Size(868, 331);
             Controls.Add(btnClear);
             Controls.Add(btnDelete);
             Controls.Add(btnUpdate);
@@ -256,9 +251,10 @@
             Controls.Add(lblFirstName);
             Controls.Add(txtCustomerCode);
             Controls.Add(lblCustomerCode);
+            MaximizeBox = false;
             Name = "CustomerForm";
-            Text = "CustomerForm";
-            ((System.ComponentModel.ISupportInitialize)dgvCustomers).EndInit();
+            Text = "Customer Form";
+            ((System.ComponentModel.ISupportInitialize)errpCustomerForm).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -285,6 +281,6 @@
         private Button btnUpdate;
         private Button btnDelete;
         private Button btnClear;
-        private DataGridView dgvCustomers;
+        private ErrorProvider errpCustomerForm;
     }
 }
